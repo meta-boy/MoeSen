@@ -27,7 +27,8 @@ dependencies:
   cupertino_icons: ^0.1.2
   web_socket_channel: ^1.1.0
   palette_generator: ^0.2.2
-
+  flutter_radio: ^0.1.7
+  
 dev_dependencies:
   hive_generator: ^0.7.0+2
 

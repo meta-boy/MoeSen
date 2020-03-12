@@ -32,16 +32,21 @@ dynamic getData(IOWebSocketChannel channel, AsyncSnapshot snapshot) {
 Album getImageUrl(SocketData data) {
   Album album;
   final List<Album> all = data.d.song.albums;
-  for (int i = 0; i < all.length; i++) {
+  try {
+    for (int i = 0; i < all.length; i++) {
     if (all[i].image != null ||
         all[i].name != null ||
         all[i].id != null ||
-        all[i].nameRomaji != null) {
+        all[i].nameRomaji != null ) {
       album = all[i];
       album.image = Uri.decodeFull(Uri.encodeFull(all[i].image));
     } else {
       album = defaultAlbum;
     }
+  }
+  } catch (e) {
+      album = defaultAlbum;
+    
   }
   return album;
 }

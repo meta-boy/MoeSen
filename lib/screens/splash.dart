@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:moe_client/constants/colors.dart';
 import 'package:moe_client/constants/logotext.dart';
+import 'package:moe_client/screens/select/select.dart';
 
 import 'home/home.dart';
 
 class Splash extends StatefulWidget {
+  
   @override
   _SplashState createState() => _SplashState();
 }
@@ -15,7 +17,7 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
     super.initState();
     Future.delayed(Duration(seconds: 3)).then((onValue) =>
         Navigator.pushReplacement(
-            context, MaterialPageRoute(builder: (context) => Home())));
+            context, MaterialPageRoute(builder: (context) => Select())));
   }
 
   @override
