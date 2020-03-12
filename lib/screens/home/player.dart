@@ -26,6 +26,7 @@ class _PlayerState extends State<Player> {
     return image;
   }
 
+
   @override
   void dispose() {
     // TODO: implement dispose
@@ -33,7 +34,7 @@ class _PlayerState extends State<Player> {
   }
   @override
   Widget build(BuildContext context) {
-    print(widget.album.image);
+    // print(widget.album.image);
     return Container(
         height: MediaQuery.of(context).size.height * 0.8,
         child: Stack(
@@ -72,7 +73,7 @@ class _PlayerState extends State<Player> {
                                     fontSize: 24, fontWeight: FontWeight.w600)),
                             TextSpan(
                                 text: 
-                                    widget.album.name +
+                                    widget.album != null ?  widget.album.name : "Unknown" +
                                     " | " +
                                     widget.data.d.song.artists[0].name != null ? widget.data.d.song.artists[0].name : "Unknown" + " | " +
                                     widget.data.d.song.artists[0].nameRomaji != null ? widget.data.d.song.artists[0].nameRomaji : "Unknown",

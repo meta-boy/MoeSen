@@ -18,6 +18,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  String status;
   String url;
   String music;
   Color backgroundColor;
@@ -74,12 +75,16 @@ class _HomeState extends State<Home> {
     print('Audio Start OK');
   }
 
+  
   @override
   void initState() {
     url = widget.socketUrl;
     music = widget.musicStream;
+    // status = "pause";
     connect();
     audioStart();
+    
+
     
     super.initState();
   }
@@ -125,6 +130,7 @@ class _HomeState extends State<Home> {
                   if (snapshot.connectionState.index == 0) {
                     connect();
                   }
+                  
                   print(snapshot.data);
                   var d = jsonDecode(snapshot.data);
                   var op = d['op'];
@@ -140,12 +146,13 @@ class _HomeState extends State<Home> {
                           d['t'] != 'QUEUE_UPDATE' &&
                           d['t'] != 'NOTIFICATION') break;
                       data = SocketData.fromJson(d);
+                      
                       break;
                     default:
                       sendPings(channel, heartbeat).then((value) => {});
                   }
                 }
-
+                
                 return data != null
                     ? Player(data: data, album: getImageUrl(data))
                     : Center(child: Center(child: CircularProgressIndicator()));
