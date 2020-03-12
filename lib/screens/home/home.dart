@@ -7,12 +7,15 @@ import 'package:moe_client/api/functions.dart';
 import 'package:moe_client/constants/colors.dart';
 import 'package:moe_client/models/socketdata.dart';
 import 'package:moe_client/screens/select/select.dart';
+
 import 'package:web_socket_channel/io.dart';
 import 'player.dart';
 
 class Home extends StatefulWidget {
-  Home({this.socketUrl: "wss://listen.moe/kpop/gateway_v2", this.musicStream: "https://listen.moe/kpop/fallback"});
-  String socketUrl, musicStream;
+  Home(
+      {this.socketUrl: "wss://listen.moe/kpop/gateway_v2",
+      this.musicStream: "https://listen.moe/kpop/fallback"});
+  final String socketUrl, musicStream;
   @override
   _HomeState createState() => _HomeState();
 }
@@ -26,22 +29,19 @@ class _HomeState extends State<Home> {
   int heartbeat;
   Stream<dynamic> stream;
   SocketData data;
-  
-  
+
+  final GlobalKey imageKey = GlobalKey();
 
   bool _isPlaying = false;
   Future<void> _pause() async {
     await FlutterRadio.pause(url: music);
-    print("stopping radio");
   }
 
   Future<void> _stop() async {
     await FlutterRadio.stop();
-    print("stopping radio");
   }
 
   Future<void> _play() async {
-    
     await FlutterRadio.play(url: music);
   }
 
@@ -49,8 +49,10 @@ class _HomeState extends State<Home> {
     await Future.delayed(Duration(milliseconds: heartbeat), () {
       try {
         channel.sink.add(jsonEncode({"op": 9}));
+        print("pong~");
       } catch (e) {
         connect();
+        print("new connection");
       }
     });
   }
@@ -62,7 +64,6 @@ class _HomeState extends State<Home> {
       var data = jsonDecode(event);
       if (data['op'] == 0) {
         heartbeat = data['d']['heartbeat'];
-        print(data);
       } else {
         heartbeat = 45000;
       }
@@ -70,12 +71,32 @@ class _HomeState extends State<Home> {
     });
   }
 
-  Future<void> audioStart() async {
-    await FlutterRadio.audioStart();
-    print('Audio Start OK');
+  Color accentColor = hotPink;
+
+  String getImage(Album album) {
+    String image;
+    try {
+      image = album.image;
+    } catch (e) {
+      image = null;
+    }
+    return image;
   }
 
-  
+  Future<void> setColor(SocketData data) async {
+    Album album = getImageUrl(data);
+    String url = getImage(album) != null
+        ? "https://cdn.listen.moe/covers/" + album.image
+        : "https://listen.moe/_nuxt/img/248c1f3.png";
+
+    accentColor = await getColor(url);
+    setState(() {});
+  }
+
+  Future<void> audioStart() async {
+    await FlutterRadio.audioStart();
+  }
+
   @override
   void initState() {
     url = widget.socketUrl;
@@ -83,22 +104,25 @@ class _HomeState extends State<Home> {
     // status = "pause";
     connect();
     audioStart();
-    
+    setColor(data);
 
-    
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    var a = Navigator.of(context);
     return Scaffold(
       floatingActionButton: SizedBox(
           height: MediaQuery.of(context).size.height * 0.1,
           child: FloatingActionButton(
-            onPressed: () async{
-              if (_isPlaying){
-               await _pause();
+            foregroundColor: accentColor.computeLuminance() > 0.5
+                ? Colors.black
+                : Colors.white,
+            elevation: 8,
+            backgroundColor: accentColor == hotPink ? darkBlue : accentColor,
+            onPressed: () async {
+              if (_isPlaying) {
+                await _pause();
               } else {
                 await _play();
               }
@@ -106,17 +130,20 @@ class _HomeState extends State<Home> {
                 _isPlaying = !_isPlaying;
               });
             },
-            child: _isPlaying ? Icon(Icons.pause): Icon(Icons.play_arrow),
+            child: _isPlaying ? Icon(Icons.pause) : Icon(Icons.play_arrow),
           )),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      backgroundColor: darkBlue,
+      backgroundColor: accentColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         leading: Icon(Icons.search),
         actions: <Widget>[
-          IconButton(icon: Icon(Icons.library_music), onPressed: () {
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Select()));
-          }),
+          IconButton(
+              icon: Icon(Icons.library_music),
+              onPressed: () {
+                Navigator.pushReplacement(
+                    context, MaterialPageRoute(builder: (context) => Select()));
+              }),
           IconButton(icon: Icon(Icons.settings), onPressed: () {})
         ],
       ),
@@ -130,15 +157,11 @@ class _HomeState extends State<Home> {
                   if (snapshot.connectionState.index == 0) {
                     connect();
                   }
-                  
-                  print(snapshot.data);
+
                   var d = jsonDecode(snapshot.data);
                   var op = d['op'];
                   switch (op) {
                     case 0:
-                      print("ok");
-                      int hb = d['d']['heartbeat'];
-
                       break;
                     case 1:
                       if (d['t'] != 'TRACK_UPDATE' &&
@@ -146,15 +169,22 @@ class _HomeState extends State<Home> {
                           d['t'] != 'QUEUE_UPDATE' &&
                           d['t'] != 'NOTIFICATION') break;
                       data = SocketData.fromJson(d);
-                      
+                      setColor(data).then((value) => null);
+                      print("changing song");
+                      break;
+                    case 9:
+                      sendPings(channel, heartbeat).then((value) => {});
                       break;
                     default:
-                      sendPings(channel, heartbeat).then((value) => {});
                   }
                 }
-                
+
                 return data != null
-                    ? Player(data: data, album: getImageUrl(data))
+                    ? Player(
+                        data: data,
+                        album: getImageUrl(data),
+                        accentColor: accentColor,
+                      )
                     : Center(child: Center(child: CircularProgressIndicator()));
               } catch (e) {
                 return Center(
@@ -169,7 +199,6 @@ class _HomeState extends State<Home> {
   void dispose() {
     channel.sink.close();
     _stop();
-    print("dispose");
     super.dispose();
   }
 }

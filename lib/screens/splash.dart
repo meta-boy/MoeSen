@@ -3,10 +3,8 @@ import 'package:moe_client/constants/colors.dart';
 import 'package:moe_client/constants/logotext.dart';
 import 'package:moe_client/screens/select/select.dart';
 
-import 'home/home.dart';
 
 class Splash extends StatefulWidget {
-  
   @override
   _SplashState createState() => _SplashState();
 }
