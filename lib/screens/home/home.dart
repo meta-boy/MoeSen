@@ -20,7 +20,7 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends State<Home> with SingleTickerProviderStateMixin{
   String status;
   String url;
   String music;
@@ -30,6 +30,7 @@ class _HomeState extends State<Home> {
   Stream<dynamic> stream;
   SocketData data;
 
+  AnimationController _animationController;
   final GlobalKey imageKey = GlobalKey();
 
   bool _isPlaying = false;
@@ -102,10 +103,11 @@ class _HomeState extends State<Home> {
     url = widget.socketUrl;
     music = widget.musicStream;
     // status = "pause";
+    _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 500));
     connect();
     audioStart();
     setColor(data);
-
+    _animationController.forward();
     super.initState();
   }
 
@@ -128,9 +130,10 @@ class _HomeState extends State<Home> {
               }
               setState(() {
                 _isPlaying = !_isPlaying;
+                _isPlaying ? _animationController.reverse() : _animationController.forward();
               });
             },
-            child: _isPlaying ? Icon(Icons.pause) : Icon(Icons.play_arrow),
+            child: AnimatedIcon(icon: AnimatedIcons.pause_play, progress: _animationController),
           )),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       backgroundColor: accentColor,
