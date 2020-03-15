@@ -1,6 +1,6 @@
 moeClient
 ==========
-A simple client for http://listen.moe/
+A simple client ( unofficial ) for http://listen.moe/
 
 
 
@@ -11,7 +11,7 @@ A simple client for http://listen.moe/
 Screenshots
 ----
 
-<img src = " https://cdn.discordapp.com/attachments/683669886978752524/688682844096299035/Screenshot_20200315-150937.jpg" width = 180>  <img src = "https://cdn.discordapp.com/attachments/683669886978752524/688678824816410634/Screenshot_20200315-145301.jpg" width = 180>
+<img src = "https://cdn.discordapp.com/attachments/683669886978752524/688682844096299035/Screenshot_20200315-150937.jpg" width = 180>  <img src = "https://cdn.discordapp.com/attachments/683669886978752524/688678824816410634/Screenshot_20200315-145301.jpg" width = 180>
 
 <img src = "https://cdn.discordapp.com/attachments/683669886978752524/688678824543780874/Screenshot_20200315-145256.jpg" width = 180>  <img src = "https://cdn.discordapp.com/attachments/683669886978752524/688679795567230998/Screenshot_20200315-145730.jpg" width = 180>
 
