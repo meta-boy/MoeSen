@@ -1,6 +1,6 @@
 moeClient
 ==========
-A simple client ( unofficial ) for http://listen.moe/ wrritten in dart
+A simple client ( unofficial ) for http://listen.moe/ written in dart
 
 
 
